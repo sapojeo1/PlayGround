@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#101a21" />
+  <title>Street Chaves — Courtyard Showdown</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="game-shell">
+    <header class="topbar">
+      <a class="wordmark" href="#" aria-label="Street Chaves home"><span class="mark-icon">✳</span> ARCADE<span class="wordmark-dot">/</span>STREET</a>
+      <div class="top-note"><span class="live-dot"></span> COURTYARD DISTRICT <span class="top-divider">·</span> EST. 1981</div>
+      <button class="sound-toggle" id="soundToggle" aria-label="Toggle sound"><span id="soundIcon">♫</span><span id="soundLabel">SOUND ON</span></button>
+    </header>
+
+    <section class="game-layout" aria-label="Street Chaves game">
+      <div class="game-column">
+        <div class="game-heading">
+          <div>
+            <div class="eyebrow"><span class="eyebrow-line"></span> A COURTYARD BEAT-'EM-UP</div>
+            <h1>STREET <span>CHAVES</span><sup>2D</sup></h1>
+          </div>
+          <div class="heading-stamp"><span>VOL.</span><strong>01</strong><small>THE COURTYARD</small></div>
+        </div>
+        <div class="game-frame" id="gameFrame">
+          <canvas id="game" width="960" height="540" aria-label="Street Chaves 2D game canvas"></canvas>
+          <div class="scanlines" aria-hidden="true"></div>
+          <div class="hud" id="hud" aria-live="polite">
+            <div class="hud-left">
+              <div class="portrait"><span class="portrait-face">☺</span><span class="portrait-star">✦</span></div>
+              <div class="player-readout"><div class="hud-name">CHAVINHO <span>PLAYER 1</span></div><div class="health-track"><div class="health-fill" id="healthFill"></div></div></div>
+            </div>
+            <div class="hud-center"><span class="hud-label">SCORE</span><strong id="score">000000</strong></div>
+            <div class="hud-right"><span class="hud-label">TIME</span><strong id="timer">01:30</strong><div class="round-label">ROUND <b id="round">01</b></div></div>
+          </div>
+          <div class="screen-overlay" id="overlay">
+            <div class="intro-card" id="introCard">
+              <div class="card-kicker"><span>★</span> THE NEIGHBORHOOD NEEDS YOU <span>★</span></div>
+              <h2>KEEP THE<br><em>PEACE!</em></h2>
+              <p>The courtyard's gone wild. Teach the bullies some manners and collect the snacks they drop.</p>
+              <button class="play-button" id="playButton"><span>START GAME</span><b>→</b></button>
+              <div class="card-foot"><span>ONE LIFE. BIG HEART.</span><span>PRESS ENTER ↵</span></div>
+            </div>
+            <div class="end-card hidden" id="endCard">
+              <div class="card-kicker" id="endKicker">COURTYARD REPORT</div>
+              <h2 id="endTitle">NICE<br><em>WORK!</em></h2>
+              <p id="endText">The neighborhood is safe... for now.</p>
+              <button class="play-button" id="restartButton"><span>PLAY AGAIN</span><b>↻</b></button>
+            </div>
+            <div class="pause-badge hidden" id="pauseBadge">PAUSED <span>Ⅱ</span></div>
+          </div>
+          <div class="toast" id="toast" aria-live="polite"></div>
+        </div>
+        <div class="game-caption">
+          <span><i class="caption-square"></i> LIVE FROM THE COURTYARD</span>
+          <span class="caption-right"><span id="waveText">READY WHEN YOU ARE</span><i class="signal-bars"><b></b><b></b><b></b></i></span>
+        </div>
+      </div>
+
+      <aside class="side-panel">
+        <section class="mission-card">
+          <div class="panel-label">TODAY'S MISSION <span>01 / 01</span></div>
+          <h2>NO BULLIES<br>ON THIS BLOCK.</h2>
+          <p>Clear the courtyard before the bell rings. Keep your distance, pick your moment, and watch your back.</p>
+          <div class="mission-progress"><div class="progress-copy"><span>NEIGHBORHOOD PEACE</span><b id="missionCount">0 / 8</b></div><div class="progress-track"><div id="missionProgress"></div></div></div>
+          <div class="mission-reward"><span class="reward-icon">✦</span><span>REWARD</span><strong>THE GOLDEN TORTA</strong></div>
+        </section>
+        <section class="controls-card">
+          <div class="panel-label">HOW TO PLAY <span>CONTROLS</span></div>
+          <div class="control-row"><div class="key-group"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></div><span>MOVE AROUND</span></div>
+          <div class="control-row"><div class="key-group"><kbd class="wide">SPACE</kbd></div><span>SWING A PUNCH</span></div>
+          <div class="control-row"><div class="key-group"><kbd>SHIFT</kbd></div><span>QUICK DASH</span></div>
+          <div class="control-row"><div class="key-group"><kbd>ESC</kbd></div><span>TAKE A BREATHER</span></div>
+          <div class="tip-box"><span>✦</span><p><b>STREET SMARTS</b><br>Face your target before punching. Snacks restore a little health!</p></div>
+        </section>
+        <div class="side-footer"><span>BUILT WITH HEART IN THE BARRIO</span><span>© 1981—2025</span></div>
+      </aside>
+    </section>
+    <footer class="page-footer"><span>AN UNOFFICIAL COURTYARD CLASSIC</span><span>MADE FOR THE LOVE OF THE NEIGHBORHOOD <b>♥</b></span></footer>
+  </main>
+  <div class="touch-controls" id="touchControls" aria-label="Touch controls">
+    <div class="dpad"><button data-dir="up" aria-label="Move up">▲</button><button data-dir="left" aria-label="Move left">◀</button><button data-dir="down" aria-label="Move down">▼</button><button data-dir="right" aria-label="Move right">▶</button></div>
+    <div class="touch-actions"><button class="touch-dash" id="touchDash">DASH</button><button class="touch-punch" id="touchPunch">PUNCH</button></div>
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>
