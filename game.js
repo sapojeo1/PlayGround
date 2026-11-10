@@ -37,6 +37,8 @@
     attack: 0,
     dash: 0,
     dashLock: 0,
+    dashX: 0,
+    dashY: 0,
     invuln: 0,
     anim: 0,
   };
@@ -118,6 +120,8 @@
     player.attack = 0;
     player.dash = 0;
     player.dashLock = 0;
+    player.dashX = 0;
+    player.dashY = 0;
     player.invuln = 0;
     enemies = [];
     snacks = [];
@@ -243,8 +247,10 @@
     if (keys.has('w') || keys.has('arrowup')) dy -= 1;
     if (!dx && !dy) dx = player.face;
     const length = Math.hypot(dx, dy) || 1;
-    player.vx = (dx / length) * 520;
-    player.vy = (dy / length) * 520;
+    player.dashX = dx / length;
+    player.dashY = dy / length;
+    player.vx = player.dashX * 520;
+    player.vy = player.dashY * 520;
     player.dash = 0.16;
     player.dashLock = 0.8;
     player.invuln = 0.2;
@@ -274,7 +280,7 @@
     ctx.fillStyle = '#778b81';
     for (let i = 0; i < 12; i += 1) {
       const x = i * 87 - 18;
-      const h = rand(18, 45);
+      const h = 18 + ((i * 17 + 11) % 28);
       ctx.fillRect(x, 220 - h, 70, h + 85);
       ctx.fillStyle = '#485d5b';
       ctx.fillRect(x + 12, 238 - h, 9, 13);
@@ -481,7 +487,7 @@
     const stride = moving ? Math.sin(state.anim * 13 + (ch.anim || 0)) * 3 : Math.sin(state.anim * 3 + (ch.anim || 0)) * 1.2;
     ctx.save();
     ctx.translate(ch.x, ch.y);
-    if (ch.flash > 0 && Math.floor(state.anim * 45) % 2 === 0) {
+    if ((ch.flash > 0 || (isPlayer && ch.invuln > 0)) && Math.floor(state.anim * 45) % 2 === 0) {
       ctx.globalAlpha = 0.48;
     }
 
@@ -653,23 +659,21 @@
     if (keys.has('s') || keys.has('arrowdown')) playerMoveY += 1;
     if (keys.has('w') || keys.has('arrowup')) playerMoveY -= 1;
 
-    if (playerMoveX || playerMoveY) {
+    if (player.dash > 0) {
+      player.vx = player.dashX * 520;
+      player.vy = player.dashY * 520;
+    } else if (playerMoveX || playerMoveY) {
       const length = Math.hypot(playerMoveX, playerMoveY) || 1;
-      const maxSpeed = player.speed + (player.dash > 0 ? 120 : 0);
-      player.vx = (playerMoveX / length) * maxSpeed;
-      player.vy = (playerMoveY / length) * maxSpeed;
+      player.vx = (playerMoveX / length) * player.speed;
+      player.vy = (playerMoveY / length) * player.speed;
       if (playerMoveX !== 0) player.face = playerMoveX > 0 ? 1 : -1;
     } else {
       player.vx *= 0.7;
       player.vy *= 0.7;
     }
 
-    if (player.attack > 0) player.attack -= dt;
-    if (player.dash > 0) {
-      player.dash -= dt;
-      player.vx *= 0.96;
-      player.vy *= 0.96;
-    }
+    if (player.attack > 0) player.attack = Math.max(0, player.attack - dt);
+    if (player.dash > 0) player.dash = Math.max(0, player.dash - dt);
     if (player.dashLock > 0) player.dashLock -= dt;
     if (player.invuln > 0) player.invuln -= dt;
 
@@ -759,7 +763,7 @@
 
   function frame(timestamp) {
     if (!state.last) state.last = timestamp;
-    const dt = Math.min((timestamp - state.last) / 1000, 0.033);
+    const dt = Math.min((timestamp - state.last) / 1000, 0.1);
     state.last = timestamp;
     if (state.mode === 'playing') {
       update(dt);
@@ -784,6 +788,7 @@
     if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(key) || event.code === 'Space') {
       event.preventDefault();
     }
+    if (event.repeat && (key === 'enter' || key === 'escape' || event.code === 'Space' || key === 'shift')) return;
     if (key === 'enter' && (state.mode === 'intro' || state.mode === 'won' || state.mode === 'lost')) {
       startGame();
       return;
@@ -810,6 +815,11 @@
     touchKeys.delete(key);
   });
 
+  window.addEventListener('blur', () => {
+    keys.clear();
+    touchKeys.clear();
+  });
+
   $('playButton').addEventListener('click', startGame);
   $('restartButton').addEventListener('click', startGame);
   $('soundToggle').addEventListener('click', () => {
@@ -823,6 +833,7 @@
     const dir = button.dataset.dir;
     const press = (event) => {
       event.preventDefault();
+      button.setPointerCapture?.(event.pointerId);
       if (dir === 'up') keys.add('w');
       if (dir === 'down') keys.add('s');
       if (dir === 'left') keys.add('a');
